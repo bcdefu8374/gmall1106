@@ -23,6 +23,8 @@
         <module>gmall-publisher</module>
         <module>dw-chart</module>
         <module>gmall-canal</module>
+        <module>gmall-es</module>
+        <module>gmall-es</module>
     </modules>
 
     <properties>

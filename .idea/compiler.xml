@@ -11,6 +11,7 @@
         <module name="gmall-realtime" />
         <module name="gmall-mocker" />
         <module name="gmall-logger" />
+        <module name="gmall-es" />
         <module name="gmall-publisher" />
         <module name="gmall-canal" />
       </profile>
