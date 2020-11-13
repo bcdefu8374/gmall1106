@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,14 +83,14 @@ public class PublisherController {
         Map todayMap = null;
         Map yesterdayMap = null;
         //判断
-        if ("dau".equals(id)){
+        if ("dau".equals(id)) {
             //1.获取当天的日活分时数据
             todayMap = publisherService.getDauTotalHourMap(date);
 
             //2.获取昨天的日活分时数据
             yesterdayMap = publisherService.getDauTotalHourMap(yesterday);
 
-        }else if ("order_amount".equals(id)){
+        } else if ("order_amount".equals(id)) {
             //1.获取当天的交易额的分时统计
             todayMap = publisherService.getOrderAmountHour(date);
 
@@ -102,8 +103,17 @@ public class PublisherController {
         result.put("today", todayMap);
 
 
-
         //5.返回结果
         return JSONObject.toJSONString(result);
+    }
+
+    @RequestMapping("sale_detail")
+    public String getSaleDetail(@RequestParam("date") String date,
+                                @RequestParam("startpage") int startpage,
+                                @RequestParam("size") int size,
+                                @RequestParam("keyword") String keyword) throws IOException {
+
+
+        return publisherService.getSaleDetail(date, startpage, size, keyword);
     }
 }

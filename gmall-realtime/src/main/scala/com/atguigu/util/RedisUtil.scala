@@ -31,7 +31,7 @@ object RedisUtil {
       jedisPool = new JedisPool(jedisPoolConfig, host, port.toInt)
     }
     //println(s"jedisPool.getNumActive = ${jedisPool.getNumActive}")
-    println("获得一个连接")
+//    println("获得一个连接")
     jedisPool.getResource
   }
 }

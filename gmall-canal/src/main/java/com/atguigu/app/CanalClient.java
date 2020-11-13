@@ -46,11 +46,11 @@ public class CanalClient {
             // 紧接着再去抓，很可能还是空的，所以就sleep等待一下，不要频繁的去抓取
             if (message.getEntries().size() <= 0){
                 System.out.println("当前没有数据休息一下！");
-                try {
+                /*try {
                     Thread.sleep(5000);
                 }catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }else {
 
                 //能走到这里，说明一定不为空
@@ -105,24 +105,32 @@ public class CanalClient {
         //求的是GMV，订单表，新增及变化 ，对于订单表而言，用的是新增和变化，新增一定要，变化的就不要了
         //对于订单表而言就只要新增数据
         if ("order_info".equals(tableName) && CanalEntry.EventType.INSERT.equals(eventType)) {
-            for (CanalEntry.RowData rowData : rowDatasList) {
+            sendToKafka(rowDatasList,GmallConstant.GMALL_ORDER_INFO);
+        }else if ("order_detail".equals(tableName) && CanalEntry.EventType.INSERT.equals(eventType)){
+            sendToKafka(rowDatasList,GmallConstant.GMALL_ORDER_DETAIL);
 
-                //创建json对象，用于存放多个列的数据
-                JSONObject jsonObject = new JSONObject();
+        }else if ("user_info".equals(tableName) && (CanalEntry.EventType.INSERT.equals(eventType) || CanalEntry.EventType.UPDATE.equals(eventType))){
+            sendToKafka(rowDatasList, GmallConstant.GMALL_USER_INFO);
+        }
 
-                //对于更新数据而言，我们只要修改后的数据
-                for (CanalEntry.Column column : rowData.getAfterColumnsList()) {
-                    jsonObject.put(column.getName(),column.getValue());
-                }
+    }
 
-                //打印
-                System.out.println(jsonObject.toString());
+    private static void sendToKafka(List<CanalEntry.RowData> rowDatasList, String gmallUserInfo) {
+        for (CanalEntry.RowData rowData : rowDatasList) {
 
-                //发送数据到 kafka
-                MyKafkaSender.send(GmallConstant.GMALL_ORDER_INFO,jsonObject.toString());
+            //创建json对象，用于存放多个列的数据
+            JSONObject jsonObject = new JSONObject();
 
-
+            //对于更新数据而言，我们只要修改后的数据
+            for (CanalEntry.Column column : rowData.getAfterColumnsList()) {
+                jsonObject.put(column.getName(), column.getValue());
             }
+
+            //打印
+            System.out.println(jsonObject.toString());
+
+            //发送数据到 kafka
+            MyKafkaSender.send(gmallUserInfo, jsonObject.toString());
         }
     }
 

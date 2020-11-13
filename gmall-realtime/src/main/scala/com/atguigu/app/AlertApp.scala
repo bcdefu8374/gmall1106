@@ -16,7 +16,6 @@ import org.apache.spark.streaming.{Minutes, Seconds, StreamingContext}
 import scala.util.control.Breaks._
 
 
-
 /**
  * @author chen
  * @topic
@@ -32,6 +31,7 @@ object AlertApp {
 
     //3.从kafka获取数据
     val kafkaDStream: InputDStream[ConsumerRecord[String, String]] = MyKafkaUtil.getKafkaStream(GmallConstant.GMALL_EVENT,ssc)
+
 
     //4.将每行数据转化为样例类，补充时间字段，并将数据转化为kv结构(mid,log)
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH")
@@ -50,7 +50,7 @@ object AlertApp {
     })
 
     //5.开窗5min
-    val midToLogByWindowDStream = midToLogDStream.window(Minutes(5))
+    val midToLogByWindowDStream: DStream[(String, EventLog)] = midToLogDStream.window(Minutes(5))
 
     //6.按照mid分组
     val midToLogGroup: DStream[(String, Iterable[EventLog])] = midToLogByWindowDStream.groupByKey()
